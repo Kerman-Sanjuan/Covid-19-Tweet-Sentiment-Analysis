@@ -1,1 +1,3 @@
-print("Proiektuaren hasiera")
+import matplotlib as plt
+
+print("hola mundo")

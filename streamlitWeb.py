@@ -15,3 +15,5 @@ chart_data = pd.DataFrame(
      columns=['a', 'b', 'c'])
 
 st.line_chart(chart_data)
+print("hola mundo")
+print("Patata")
