@@ -1,20 +1,22 @@
 import streamlit as st
-# To make things easier later, we're also importing numpy and pandas for
-# working with sample data.
-import numpy as np
-import pandas as pd
 
-st.title('My first app')
-st.write("Here's our first attempt at using data to create a table:")
-st.write(pd.DataFrame({
-    'first column': [1, 2, 3, 4],
-    'second column': [10, 20, 30, 40]
-}))
-chart_data = pd.DataFrame(
-     np.random.randn(20, 3),
-     columns=['a', 'b', 'c'])
+st.title('TITLE')
 
-st.line_chart(chart_data)
-print("hola mundo")
-print("Patata")
-print("No se si se detectaran cambios")
+dataset_name = st.sidebar.selectbox(
+    'Select an upload method',
+    ('RAW TEXT', 'TXT FILE')
+)
+st.write(f"## {dataset_name}")
+
+if dataset_name == "RAW TEXT":
+	new_user = st.text_input("TWEET")
+	if st.button('Make prediction'):
+		st.write("Input: " + new_user)
+
+else:	
+	uploaded_file = st.file_uploader("Choose a file")
+	if uploaded_file is not None:
+		if st.button('Make prediction'):
+			st.write("Input: " + new_user)
+	else:
+		st.write("No file has been uploaded...")
