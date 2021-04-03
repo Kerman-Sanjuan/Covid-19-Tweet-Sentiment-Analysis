@@ -1,6 +1,5 @@
 import streamlit as st
 from io import StringIO
-import magic
 import os
 
 global current_dir
