@@ -1,4 +1,2 @@
-.ipynb_checkpoints/
-.idea/
-best_features.csv
-.ipynb_checkpoints/Proiektua-checkpoint.ipynb
+csv/best_features.csv
+csv/best_attr.csv
