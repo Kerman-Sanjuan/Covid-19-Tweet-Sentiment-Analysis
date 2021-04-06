@@ -63,8 +63,8 @@ def initialize_gui():
     checkbox = st.sidebar.checkbox("SHOW TRAINING SET WORDCLOUDS")
     nltk.download('punkt')
 
-st.title("Natural Language Processing Web Application")
-st.header("What type of upload method would you like to use?")
+st.title("COVID-19 Tweet Sentiment Analisys")
+#st.header("What type of upload method would you like to use?")
 df = pd.read_csv("csv/headers.csv").drop('Sentiment', axis=1)
 #initialize models(Logistic Regression and Neural Network)
 LR = pickle.load(open("models/logistic_regression.pk", "rb"))
