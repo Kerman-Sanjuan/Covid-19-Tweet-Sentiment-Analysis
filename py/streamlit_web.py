@@ -16,7 +16,7 @@ global checkbox
 
 def show_word_clouds():
     st.subheader("TRAINING SET WORDCLOUDS")
-    images = ['wc_neg.png', 'wc_pos.png', 'wc_neu.png']
+    images = ['py/wc_neg.png', 'py/wc_pos.png', 'py/wc_neu.png']
     st.image(images, width=500, caption=["NEGATIVE","POSITIVE","NEUTRAL"])
 
 
