@@ -6,112 +6,74 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import numpy as np
-import re
-import string
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from spellchecker import SpellChecker
+from preproc import preprocess_text
+
 
 global current_dir
+global classifier_type
+global text_input_method
+global checkbox
 
-STOPWORDS = set(stopwords.words('english'))
-STOPWORDS.add('u')
-PUNCT_TO_REMOVE = string.punctuation
-PUNCT_TO_REMOVE += 'â’'
-lemmatizer = WordNetLemmatizer()
-spell = SpellChecker()
-
-
-def remove_urls(text):
-    url_pattern = re.compile(r'https?://\S+|www\.\S+')
-    return url_pattern.sub(r'', text)
+def show_word_clouds():
+	st.subheader("TRAINING SET WORDCLOUDS")
+	images = ['wc_neg.png', 'wc_pos.png', 'wc_neu.png']
+	st.image(images, width=500, caption=["NEGATIVE","POSITIVE","NEUTRAL"])
 
 
-def remove_stopwords(text):
-    """custom function to remove the stopwords"""
-    return " ".join([word for word in str(text).split() if word not in set(stopwords.words('english'))])
-
-
-def remove_punctuation(text):
-    """custom function to remove the punctuation"""
-    spaces = ''
-    for i in range(len(PUNCT_TO_REMOVE)):
-        spaces += ' '
-    return text.translate(str.maketrans(PUNCT_TO_REMOVE, spaces))
-
-
-def lemmatize_words(text):
-    return " ".join([lemmatizer.lemmatize(word) for word in text.split()])
-
-
-def correct_spellings(text):
-    corrected_text = []
-    misspelled_words = spell.unknown(text.split())
-    for word in text.split():
-        if word in misspelled_words:
-            corrected_text.append(spell.correction(word))
-        else:
-            corrected_text.append(word)
-    return " ".join(corrected_text)
-
-
-def preprocess_text(text_input):
-    # URLS
-    text_input = remove_urls(text_input)
-
-    # LOWERCASE
-    text_input = text_input.lower()
-
-    # STOPWORDS
-    text_input = remove_stopwords(text_input)
-
-    # PUNCT
-    text_input = remove_punctuation(text_input)
-
-    # REGEX
-    text_input = re.sub('[^A-Za-z ]+', '', text_input)
-
-    # LEMMANIZATION
-    text_input = lemmatize_words(text_input)
-
-    # SPELL
-    text_input = correct_spellings(text_input)
-
-    return text_input
-
+def predict(pred_df):
+	st.subheader("RESULTS")
+	if classifier_type == "LOGISTIC REGRESSION":
+		y = LR.predict(pred_df)
+		if y[0] == 0:
+			st.error("AGAINST COVID TWEET")
+		elif y[0] == 1:
+			st.warning("NEUTRAL COVID TWEET")
+		elif y[0] == 2:
+			st.success("FAVORABLE COVID TWEET")
+	else: #NEURAL NETWORK
+		print("hola")
 
 def check_raw_text(raw_text):
-    raw_text = preprocess_text(raw_text)
-    global current_dir
-    current_dir = os.getcwd() + "/"
-    if st.button("Make prediction"):
-        if not str(raw_text):  # if the text is empty
-            st.error("Empty Text")
-        else:
-            st.success("Text processed correctly")
-            transf = vectorizer.transform([raw_text])
-            pred_df = pd.DataFrame(transf.todense(), columns=vectorizer.get_feature_names())[df.columns]
-            y = LR.predict(pred_df)
-            if y[0] == 0:
-                st.error("AGAINST COVID TWEET")
-            elif y[0] == 1:
-                st.warning("NEUTRAL COVID TWEET")
-            elif y[0] == 2:
-                st.success("FAVORABLE COVID TWEET")
+	raw_text = preprocess_text(raw_text)
+	global current_dir
+	current_dir = os.getcwd() + "/"
+	print(current_dir)
+	transf = vectorizer.transform([raw_text])
+	pred_df = pd.DataFrame(transf.todense(), columns=vectorizer.get_feature_names())[df.columns]
+	predict(pred_df)
 
 
-df = pd.read_csv("../csv/best_attr.csv").drop('Sentiment', axis=1)
-LR = pickle.load(open("../models/logistic_regression.pk", "rb"))
-vectorizer = pickle.load(open("../models/vectorizer.pk", "rb"))
+def process(text):
+	if st.button("Make prediction"):
+		if not str(text):  # if text is empty
+			st.error("Empty Text")
+		else:
+			st.success("Text processed correctly")
+			check_raw_text(text)
+
+
+def initialize_gui():
+	#initialize sidebar elements
+	global classifier_type
+	global text_input_method
+	global checkbox
+	text_input_method = st.sidebar.selectbox("UPLOAD METHOD", ("RAW TEXT","EXTERNAL FILE"))
+	classifier_type = st.sidebar.selectbox("WHICH CLASSIFIER WOULD YOU LIKE TO USE?",
+		("LOGISTIC REGRESSION","NEURAL NETWORK"))
+	checkbox = st.sidebar.checkbox("SHOW TRAINING SET WORDCLOUDS")
+
+
 st.title("Natural Language Processing Web Application")
 st.header("What type of upload method would you like to use?")
+df = pd.read_csv("../csv/best_attr.csv").drop('Sentiment', axis=1)
+#initialize models(Logistic Regression and Neural Network)
+LR = pickle.load(open("../models/logistic_regression.pk", "rb"))
+vectorizer = pickle.load(open("../models/vectorizer.pk", "rb"))
+initialize_gui()
 
-option = st.selectbox('Upload method', ('Raw Text', 'External File'))
 
-if option == 'Raw Text':
-
-    raw = st.text_area("Enter the tweet")
-    check_raw_text(raw)
+if text_input_method == 'RAW TEXT':
+    process(st.text_area("Enter the tweet"))
 
 else:
     uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
@@ -119,4 +81,7 @@ else:
         bytes_data = uploaded_file.getvalue()
         stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
         string_data = stringio.read()
-        check_raw_text(string_data)
+        process(string_data)
+
+if checkbox:
+	show_word_clouds()
