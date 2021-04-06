@@ -1,11 +1,9 @@
 import re
 import string
-from nltk.corpus import stopwords
+import nltk
+nltk.data.path.append("./nltk_data/")
 from nltk.stem import WordNetLemmatizer
 from spellchecker import SpellChecker
-
-STOPWORDS = set(stopwords.words('english'))
-STOPWORDS.add('u')
 PUNCT_TO_REMOVE = string.punctuation
 PUNCT_TO_REMOVE += 'â’'
 lemmatizer = WordNetLemmatizer()
@@ -16,9 +14,6 @@ def remove_urls(text):
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
     return url_pattern.sub(r'', text)
 
-def remove_stopwords(text):
-    """custom function to remove the stopwords"""
-    return " ".join([word for word in str(text).split() if word not in set(stopwords.words('english'))])
 
 def remove_punctuation(text):
     """custom function to remove the punctuation"""
@@ -47,8 +42,6 @@ def preprocess_text(text_input):
     # LOWERCASE
     text_input = text_input.lower()
 
-    # STOPWORDS
-    text_input = remove_stopwords(text_input)
 
     # PUNCT
     text_input = remove_punctuation(text_input)
@@ -66,4 +59,7 @@ def preprocess_text(text_input):
 
 
 if __name__ == "__main__":
+   
     preprocess_text()
+
+
