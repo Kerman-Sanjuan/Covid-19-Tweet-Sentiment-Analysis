@@ -25,11 +25,11 @@ def predict(pred_df):
     if classifier_type == "LOGISTIC REGRESSION":
         y = LR.predict(pred_df)
         if y[0] == 0:
-            st.error("AGAINST COVID TWEET")
+            st.error("Sentiment: NEGATIVE")
         elif y[0] == 1:
-            st.warning("NEUTRAL COVID TWEET")
+            st.warning("Sentiment: NEUTRAL")
         elif y[0] == 2:
-            st.success("FAVORABLE COVID TWEET")
+            st.success("Sentiment: POSITIVE")
         else: #NEURAL NETWORK
             print("hola")
 
