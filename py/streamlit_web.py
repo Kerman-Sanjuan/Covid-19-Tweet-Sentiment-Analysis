@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import numpy as np
 from preproc import preprocess_text
+from keras.models import load_model
 import nltk
 
 global current_dir
@@ -21,17 +22,24 @@ def show_word_clouds():
 
 
 def predict(pred_df):
-    st.subheader("RESULTS")
-    if classifier_type == "LOGISTIC REGRESSION":
-        y = LR.predict(pred_df)
-        if y[0] == 0:
-            st.error("Sentiment: NEGATIVE")
-        elif y[0] == 1:
-            st.warning("Sentiment: NEUTRAL")
-        elif y[0] == 2:
-            st.success("Sentiment: POSITIVE")
-        else: #NEURAL NETWORK
-            print("hola")
+	st.subheader("RESULTS")
+	if classifier_type == "LOGISTIC REGRESSION":
+		y = LR.predict(pred_df)
+		if y[0] == 0:
+			st.error("Sentiment: NEGATIVE")
+		elif y[0] == 1:
+			st.warning("Sentiment: NEUTRAL")
+		elif y[0] == 2:
+			st.success("Sentiment: POSITIVE")
+	else: #NEURAL NETWORK
+		y = NN.predict(pred_df)
+		v = np.argmax(y[0])
+		if v == 0:
+			st.error("Sentiment: NEGATIVE")
+		elif v == 1:
+			st.warning("Sentiment: NEUTRAL")
+		elif v == 2:
+			st.success("Sentiment: POSITIVE")        
 
 def check_raw_text(raw_text):
     raw_text = preprocess_text(raw_text)
@@ -65,10 +73,11 @@ def initialize_gui():
 
 st.title("COVID-19 Tweet Sentiment Analisys")
 #st.header("What type of upload method would you like to use?")
-df = pd.read_csv("csv/headers.csv").drop('Sentiment', axis=1)
+df = pd.read_csv("../csv/headers.csv").drop('Sentiment', axis=1)
 #initialize models(Logistic Regression and Neural Network)
-LR = pickle.load(open("models/logistic_regression.pk", "rb"))
-vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
+LR = pickle.load(open("../models/logistic_regression.pk", "rb"))
+NN = load_model('../models/NN.h5')
+vectorizer = pickle.load(open("../models/vectorizer.pk", "rb"))
 initialize_gui()
 
 
