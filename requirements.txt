@@ -7,3 +7,4 @@ Keras==2.4.3
 streamlit==0.77.0
 scikit_learn==0.24.1
 spellchecker==0.4
+Tensorflow==2.4.1
