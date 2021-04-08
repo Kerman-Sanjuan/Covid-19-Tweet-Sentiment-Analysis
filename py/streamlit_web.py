@@ -33,13 +33,20 @@ def predict(pred_df):
 			st.success("Sentiment: POSITIVE")
 	else: #NEURAL NETWORK
 		y = NN.predict(pred_df)
+		for i in y:
+			st.write("PERCENTAGE SENTIMENT: NEGATIVE -> %" + str(i[0]*100))
+			st.write("PERCENTAGE SENTIMENT: NEUTRAL -> %" + str(i[1]*100))
+			st.write("PERCENTAGE SENTIMENT: POSITIVE -> %" + str(i[2]*100)) 
+
+		st.subheader("PREDICTED SENTIMENT")
 		v = np.argmax(y[0])
 		if v == 0:
 			st.error("Sentiment: NEGATIVE")
 		elif v == 1:
 			st.warning("Sentiment: NEUTRAL")
 		elif v == 2:
-			st.success("Sentiment: POSITIVE")        
+			st.success("Sentiment: POSITIVE")
+		    
 
 def check_raw_text(raw_text):
     raw_text = preprocess_text(raw_text)
