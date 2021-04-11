@@ -109,16 +109,6 @@ def check_raw_text(raw_text):
     predict(pred_df)
 
 
-def process(text):
-	global input_text
-	if st.button("Make prediction"):
-		if not str(text):  # if text is empty
-			st.error("Empty Text")
-		else:
-			st.success("Text processed correctly")
-			check_raw_text(text)
-
-
 def initialize_gui():
     #initialize sidebar elements
     global classifier_type
@@ -138,8 +128,14 @@ NN = load_model('models/NN.h5')
 vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
 initialize_gui()
 input_text = st.text_area("Enter the tweet")
-	process(input_text)
+
+
+if st.button("Make prediction"):
+		if not str(input_text):  # if text is empty
+			st.error("Empty Text")
+		else:
+			st.success("Text processed correctly")
+			check_raw_text(input_text)
 
 if checkbox:
     print_preprocess_steps()
-
