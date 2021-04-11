@@ -115,7 +115,6 @@ def process(text):
 		if not str(text):  # if text is empty
 			st.error("Empty Text")
 		else:
-			input_text = text
 			st.success("Text processed correctly")
 			check_raw_text(text)
 
@@ -125,7 +124,6 @@ def initialize_gui():
     global classifier_type
     global text_input_method
     global checkbox
-    text_input_method = st.sidebar.selectbox("UPLOAD METHOD", ("RAW TEXT","EXTERNAL FILE"))
     classifier_type = st.sidebar.selectbox("WHICH CLASSIFIER WOULD YOU LIKE TO USE?",
                                            ("LOGISTIC REGRESSION","NEURAL NETWORK"))
     checkbox = st.sidebar.checkbox("SHOW PREPROCESS STEPS")
@@ -139,19 +137,8 @@ LR = pickle.load(open("models/logistic_regression.pk", "rb"))
 NN = load_model('models/NN.h5')
 vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
 initialize_gui()
-input_text = ""
-
-
-if text_input_method == 'RAW TEXT':
-	process(st.text_area("Enter the tweet"))
-
-else:
-    uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
-    if uploaded_file is not None:
-        bytes_data = uploaded_file.getvalue()
-        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-        string_data = stringio.read()
-        process(string_data)
+input_text = st.text_area("Enter the tweet")
+	process(input_text)
 
 if checkbox:
     print_preprocess_steps()
