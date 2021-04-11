@@ -111,13 +111,13 @@ def check_raw_text(raw_text):
 
 def process(text):
 	global input_text
-    if st.button("Make prediction"):
-        if not str(text):  # if text is empty
-            st.error("Empty Text")
-        else:
-        	input_text = text
-            st.success("Text processed correctly")
-            check_raw_text(text)
+	if st.button("Make prediction"):
+		if not str(text):  # if text is empty
+			st.error("Empty Text")
+		else:
+			input_text = text
+			st.success("Text processed correctly")
+			check_raw_text(text)
 
 
 def initialize_gui():
@@ -133,11 +133,11 @@ def initialize_gui():
 
 st.title("COVID-19 Tweet Sentiment Analisys")
 #st.header("What type of upload method would you like to use?")
-df = pd.read_csv("csv/headers.csv").drop('Sentiment', axis=1)
+df = pd.read_csv("../csv/headers.csv").drop('Sentiment', axis=1)
 #initialize models(Logistic Regression and Neural Network)
-LR = pickle.load(open("models/logistic_regression.pk", "rb"))
-NN = load_model('models/NN.h5')
-vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
+LR = pickle.load(open("../models/logistic_regression.pk", "rb"))
+NN = load_model('../models/NN.h5')
+vectorizer = pickle.load(open("../models/vectorizer.pk", "rb"))
 initialize_gui()
 
 
