@@ -35,7 +35,7 @@ def correct_spellings(text):
             corrected_text.append(word)
     return " ".join(corrected_text)
 
-def preprocess_text(text_input):
+def preprocess_text	(text_input):
     # URLS
     text_input = remove_urls(text_input)
 
