@@ -2,18 +2,25 @@ import streamlit as st
 from io import StringIO
 import os
 import pickle
+import re
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import numpy as np
+from preproc import remove_urls
+from preproc import lemmatize_words
+from preproc import correct_spellings
+from preproc import remove_punctuation
 from preproc import preprocess_text
 from keras.models import load_model
 import nltk
+import time
 
 global current_dir
 global classifier_type
 global text_input_method
 global checkbox
+global input_text
 
 def show_word_clouds():
     st.subheader("TRAINING SET WORDCLOUDS")
@@ -46,7 +53,51 @@ def predict(pred_df):
 			st.warning("Sentiment: NEUTRAL")
 		elif v == 2:
 			st.success("Sentiment: POSITIVE")
-		    
+		   
+
+def print_preprocess_steps():
+	if not input_text:
+		st.header("NO TWEET HAS BEEN WRITTEN")
+	else:
+		change = input_text
+		st.header("PREPROCESS STEPS")
+
+		st.subheader("URL REMOVAL") 	
+		text = remove_urls(change)
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("TEXT TO LOWERCASE")
+		text = text.lower()
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("REMOVE PUNCTUATION")
+		text = remove_punctuation(text)
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("REMOVE EVERYTHING EXCEPT ALPHABET CHARACTERS")
+		text = re.sub('[^A-Za-z ]+', '', text)
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("LEMMATIZE WORDS")
+		text = lemmatize_words(text)
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("CORRECT SPELLING")
+		text = correct_spellings(text)
+		st.write(text)
+		time.sleep(1.5)
+
+		st.header("ORIGINAL TEXT")
+		st.write(input_text)
+		
+		st.header("AFTER PREPROCESS")
+		st.write(text)
+
 
 def check_raw_text(raw_text):
     raw_text = preprocess_text(raw_text)
@@ -75,7 +126,7 @@ def initialize_gui():
     text_input_method = st.sidebar.selectbox("UPLOAD METHOD", ("RAW TEXT","EXTERNAL FILE"))
     classifier_type = st.sidebar.selectbox("WHICH CLASSIFIER WOULD YOU LIKE TO USE?",
                                            ("LOGISTIC REGRESSION","NEURAL NETWORK"))
-    checkbox = st.sidebar.checkbox("SHOW TRAINING SET WORDCLOUDS")
+    checkbox = st.sidebar.checkbox("SHOW PREPROCESS STEPS")
     nltk.download('punkt')
 
 st.title("COVID-19 Tweet Sentiment Analisys")
@@ -89,7 +140,9 @@ initialize_gui()
 
 
 if text_input_method == 'RAW TEXT':
-    process(st.text_area("Enter the tweet"))
+	global input_text
+	input_text = st.text_area("Enter the tweet")
+	process(input_text)
 
 else:
     uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
@@ -100,4 +153,4 @@ else:
         process(string_data)
 
 if checkbox:
-    show_word_clouds()
+    print_preprocess_steps()
