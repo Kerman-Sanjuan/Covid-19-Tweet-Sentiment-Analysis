@@ -139,6 +139,7 @@ LR = pickle.load(open("models/logistic_regression.pk", "rb"))
 NN = load_model('models/NN.h5')
 vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
 initialize_gui()
+input_text = ""
 
 
 if text_input_method == 'RAW TEXT':
