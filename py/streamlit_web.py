@@ -110,10 +110,12 @@ def check_raw_text(raw_text):
 
 
 def process(text):
+	global input_text
     if st.button("Make prediction"):
         if not str(text):  # if text is empty
             st.error("Empty Text")
         else:
+        	input_text = text
             st.success("Text processed correctly")
             check_raw_text(text)
 
@@ -140,9 +142,7 @@ initialize_gui()
 
 
 if text_input_method == 'RAW TEXT':
-	global input_text
-	input_text = st.text_area("Enter the tweet")
-	process(input_text)
+	process(st.text_area("Enter the tweet"))
 
 else:
     uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
