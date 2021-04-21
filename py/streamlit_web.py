@@ -105,6 +105,7 @@ def print_preprocess_steps():
 
 		st.subheader("CORRECT SPELLING")
 		text = correct_spellings(text)
+		text = text.replace("ovid","covid")
 		st.write(text)
 		time.sleep(1.5)
 
@@ -141,11 +142,11 @@ def initialize_gui():
 
 st.title("COVID-19 Tweet Sentiment Analysis")
 #st.header("What type of upload method would you like to use?")
-df = pd.read_csv("csv/headers.csv").drop('Sentiment', axis=1)
+df = pd.read_csv("../csv/headers.csv").drop('Sentiment', axis=1)
 #initialize models(Logistic Regression and Neural Network)
-LR = pickle.load(open("models/logistic_regression.pk", "rb"))
-NN = load_model('models/NN.h5')
-vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
+LR = pickle.load(open("../models/logistic_regression.pk", "rb"))
+NN = load_model('../models/NN.h5')
+vectorizer = pickle.load(open("../models/vectorizer.pk", "rb"))
 initialize_gui()
 input_text = st.text_area("Enter the tweet")
 input_text = fix_input_text(input_text)
