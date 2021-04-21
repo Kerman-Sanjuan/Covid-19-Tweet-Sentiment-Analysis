@@ -12,6 +12,7 @@ from preproc import lemmatize_words
 from preproc import correct_spellings
 from preproc import remove_punctuation
 from preproc import preprocess_text
+from preproc import remove_stop_words
 from keras.models import load_model
 import nltk
 import time
@@ -22,10 +23,15 @@ global text_input_method
 global checkbox
 global input_text
 
-def show_word_clouds():
-    st.subheader("TRAINING SET WORDCLOUDS")
-    images = ['img/wc_neg.png', 'img/wc_pos.png', 'img/wc_neu.png']
-    st.image(images, width=500, caption=["NEGATIVE","POSITIVE","NEUTRAL"])
+
+def fix_input_text(text):
+	if str(input_text):
+		raw_data_lines = text.split("\n")
+		s = ""
+		for i in raw_data_lines:
+			if i != "\n":
+				s = s + " " + str(i)
+		return s.replace("\n"," ")
 
 
 def predict(pred_df):
@@ -41,9 +47,9 @@ def predict(pred_df):
 	else: #NEURAL NETWORK
 		y = NN.predict(pred_df)
 		for i in y:
-			st.write("PERCENTAGE SENTIMENT: NEGATIVE -> %" + str(i[0]*100))
-			st.write("PERCENTAGE SENTIMENT: NEUTRAL -> %" + str(i[1]*100))
-			st.write("PERCENTAGE SENTIMENT: POSITIVE -> %" + str(i[2]*100)) 
+			st.error("PERCENTAGE SENTIMENT: NEGATIVE -> %" + str(i[0]*100))
+			st.warning("PERCENTAGE SENTIMENT: NEUTRAL -> %" + str(i[1]*100))
+			st.success("PERCENTAGE SENTIMENT: POSITIVE -> %" + str(i[2]*100)) 
 
 		st.subheader("PREDICTED SENTIMENT")
 		v = np.argmax(y[0])
@@ -53,11 +59,16 @@ def predict(pred_df):
 			st.warning("Sentiment: NEUTRAL")
 		elif v == 2:
 			st.success("Sentiment: POSITIVE")
-		   
+	
+def print_prediction_legend():
+	st.header("PREDICTION LEGEND:")
+	st.success("GREEN IF RESULT EQUALS POSITIVE")
+	st.warning("YELLOW IF RESULT EQUALS NEUTRAL")
+	st.error("RED IF RESULT EQUALS NEGATIVE")	   
 
 def print_preprocess_steps():
 	if not input_text:
-		st.header("NO TWEET HAS BEEN WRITTEN")
+		st.warning("NO TWEET HAS BEEN WRITTEN")
 	else:
 		change = input_text
 		st.header("PREPROCESS STEPS")
@@ -69,6 +80,11 @@ def print_preprocess_steps():
 
 		st.subheader("TEXT TO LOWERCASE")
 		text = text.lower()
+		st.write(text)
+		time.sleep(1.5)
+
+		st.subheader("REMOVE STOPWORDS")
+		text = remove_stop_words(text)
 		st.write(text)
 		time.sleep(1.5)
 
@@ -105,7 +121,9 @@ def check_raw_text(raw_text):
     current_dir = os.getcwd() + "/"
     print(current_dir)
     transf = vectorizer.transform([raw_text])
+    print(transf)
     pred_df = pd.DataFrame(transf.todense(), columns=vectorizer.get_feature_names())[df.columns]
+    print(pred_df)
     predict(pred_df)
 
 
@@ -114,9 +132,11 @@ def initialize_gui():
     global classifier_type
     global text_input_method
     global checkbox
+    global checkbox_legend
     classifier_type = st.sidebar.selectbox("WHICH CLASSIFIER WOULD YOU LIKE TO USE?",
                                            ("LOGISTIC REGRESSION","NEURAL NETWORK"))
     checkbox = st.sidebar.checkbox("SHOW PREPROCESS STEPS")
+    checkbox_legend = st.sidebar.checkbox("SHOW PREDICTION LEGEND")
     nltk.download('punkt')
 
 st.title("COVID-19 Tweet Sentiment Analysis")
@@ -128,14 +148,18 @@ NN = load_model('models/NN.h5')
 vectorizer = pickle.load(open("models/vectorizer.pk", "rb"))
 initialize_gui()
 input_text = st.text_area("Enter the tweet")
+input_text = fix_input_text(input_text)
 
 
 if st.button("Make prediction"):
-		if not str(input_text):  # if text is empty
-			st.error("Empty Text")
-		else:
-			st.success("Text processed correctly")
-			check_raw_text(input_text)
+	if not input_text:  # if text is empty
+		st.warning("Empty Text")
+	else:
+		st.success("Text processed correctly")
+		check_raw_text(input_text)
 
 if checkbox:
     print_preprocess_steps()
+
+if checkbox_legend:
+	print_prediction_legend()
