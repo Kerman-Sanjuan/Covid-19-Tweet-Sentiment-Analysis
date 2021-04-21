@@ -1,4 +1,4 @@
-# Natural Language Processing EHES
+# Covid-19 Tweet sentiment analysis
  
 ## Different file description
  1. CSV: Different CSV files, contains dummy database. The long one is on the following page : https://www.kaggle.com/datatattle/covid-19-nlp-text-classification
