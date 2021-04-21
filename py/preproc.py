@@ -4,15 +4,21 @@ import nltk
 nltk.data.path.append("./nltk_data/")
 from nltk.stem import WordNetLemmatizer
 from spellchecker import SpellChecker
+from nltk.corpus import stopwords
 PUNCT_TO_REMOVE = string.punctuation
 PUNCT_TO_REMOVE += 'â’'
 lemmatizer = WordNetLemmatizer()
 spell = SpellChecker()
 
 
+def remove_stop_words(text):
+    STOPWORDS = set(stopwords.words('english'))
+    STOPWORDS.add('u')
+    return " ".join([word for word in str(text).split() if word not in set(stopwords.words('english'))])
+
 def remove_urls(text):
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
-    return url_pattern.sub(r'', text)
+    return url_pattern.sub(r'', str(text))
 
 
 def remove_punctuation(text):
@@ -42,7 +48,7 @@ def preprocess_text	(text_input):
     # LOWERCASE
     text_input = text_input.lower()
 
-
+    text_input = remove_stop_words(text_input)
     # PUNCT
     text_input = remove_punctuation(text_input)
 
