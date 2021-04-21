@@ -119,7 +119,7 @@ def initialize_gui():
     checkbox = st.sidebar.checkbox("SHOW PREPROCESS STEPS")
     nltk.download('punkt')
 
-st.title("COVID-19 Tweet Sentiment Analisys")
+st.title("COVID-19 Tweet Sentiment Analysis")
 #st.header("What type of upload method would you like to use?")
 df = pd.read_csv("csv/headers.csv").drop('Sentiment', axis=1)
 #initialize models(Logistic Regression and Neural Network)
